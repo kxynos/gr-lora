@@ -14,6 +14,8 @@ All features of the LoRa physical-layer modulation scheme are described in vario
 
 This library was primarily tested with a USRP B201 as receiver and Microchip RN2483 as transmitter. If you encounter an issue with your particular setup, feel free to let me know in the 'Issues' section of this repository.
 
+### Update of 8th Jun, 2018 - (KX)
+Updated Manual install section
 
 ### Update of 29th August, 2017
 
@@ -61,6 +63,50 @@ mkdir build
 cd build
 cmake ../  # Note to Arch Linux users: add "-DCMAKE_INSTALL_PREFIX=/usr"
 make && sudo make install
+```
+
+### Manual installation (Ubuntu/Kali 2018)
+
+In this section you will find step by step instructions for installing the dependancies and packages in Kali (2018). They should also work for Ubuntu 16.04. 
+
+```
+sudo apt-get install swig libcppunit-dev libfftw3-dev liblog4cpp5-dev libvolk1-dev python-wxgtk3.0 python-wxgtk3.0-dev libboost-all-dev python-pip automake cmake 
+sudo apt-get install gnuradio Doxygen
+
+pip install numpy
+pip install scipy
+```
+
+For some reason on my installation I had a different version of libvolk. A simple symbolic link fixed this. (other tests showed that it wasn't needed, use if only `make` fails)
+
+```
+sudo updatedb
+sudo locate libvolk.so.1.3
+```
+My library was found in : /usr/lib/x86_64-linux-gnu/libvolk.so.1.3.1
+```
+cd /usr/lib/x86_64-linux-gnu
+ln -s libvolk.so.1.3.1 libvolk.so.1.3
+```
+
+Lets install the latest version of liquid-dsp (v1.3.1) :
+```
+git clone git://github.com/jgaeddert/liquid-dsp.git 
+cd liquid-dsp
+./bootstrap.sh 
+./configure
+make
+sudo make install
+```
+Download and install `gr-lora` in your desired folder. Don't forget to include -DCMAKE_INSTALL_PREFIX=/usr in cmake. (The reason for specifying PREFIX in Kali is that I noticed that it compiled but there were issues with the `gr-lora` library not working correctly. The PREFIX fixes this, like Issue#39 (https://github.com/rpp0/gr-lora/issues/39))
+```
+git clone https://github.com/rpp0/gr-lora.git 
+mkdir build
+cd build
+cmake ../ -DCMAKE_INSTALL_PREFIX=/usr
+make
+sudo make install
+sudo ldconfig
 ```
 
 ## Testing and usage
